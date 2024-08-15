@@ -31,22 +31,19 @@ public static class MovementManager {
             return;
         }
 
+        _movementCancelSource?.Dispose();
         _movementCancelSource = new CancellationTokenSource();
-        var movementThread = new Thread(MovementFunc) {
-            IsBackground = true
-        };
-        movementThread.Start(_movementCancelSource.Token);
+        MovementFunc(_movementCancelSource.Token).ContinueWith((t, args) => {
+            Console.WriteLine("Movement canceled");
+        }, TaskContinuationOptions.OnlyOnCanceled, TaskScheduler.Default);
     }
 
-    private static void MovementFunc(object? cancellationTokenObj) {
-        ArgumentNullException.ThrowIfNull(cancellationTokenObj);
-        var cancellationToken = (CancellationToken)cancellationTokenObj;
-
+    private static async Task MovementFunc(CancellationToken cancellationToken) {
         if (!CursorWrapper.GetCursorPos(out POINT cursorPos)) {
             throw new Exception("Failed to get cursor position");
         }
 
-        Console.WriteLine("Cursor position: " + cursorPos);
+        Console.WriteLine("Movement based off of cursor position: " + cursorPos);
 
         POINT leftPos = cursorPos with {
             X = cursorPos.X - 50
@@ -56,21 +53,19 @@ public static class MovementManager {
         };
 
         do {
-            Thread.Sleep(5000);
-            if (cancellationToken.IsCancellationRequested) {
-                break;
-            }
+            await Task.Delay(5000, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
 
             MouseHelper.MoveToPointAndClick(leftPos);
 
-            Thread.Sleep(5000);
-            if (cancellationToken.IsCancellationRequested) {
-                break;
-            }
+            await Task.Delay(5000, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
 
             MouseHelper.MoveToPointAndClick(rightPos);
         }
         while (!cancellationToken.IsCancellationRequested);
+
+        cancellationToken.ThrowIfCancellationRequested();
     }
 
     private static void OnShutdownHotkey() {
