@@ -4,16 +4,17 @@ using System.Runtime.InteropServices;
 
 namespace FabulousDuster;
 
-public static partial class MessageWrapper {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct POINT(int x, int y) {
-        public int X = x;
-        public int Y = y;
+[StructLayout(LayoutKind.Sequential)]
+public struct POINT(int x, int y) {
+    public int X = x;
+    public int Y = y;
 
-        public override string ToString() {
-            return $"X: {X}, Y: {Y}";
-        }
+    public override readonly string ToString() {
+        return $"X: {X}, Y: {Y}";
     }
+}
+
+public static partial class MessageWrapper {
 
     [StructLayout(LayoutKind.Sequential)]
     public struct MSG {

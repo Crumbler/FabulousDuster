@@ -1,20 +1,24 @@
 ﻿
+using System.Windows.Forms;
 using static FabulousDuster.MessageWrapper;
 
 namespace FabulousDuster;
 
 public static class HotKeyManager {
     private static int _isProcessingHotkeys;
-    private static readonly Dictionary<int, Action> _hotKeyActions = [];
+    private static readonly List<(KeyModifiers modifiers, Keys key, Action action)> _hotkeys = [];
 
     public static void AddHotKey(KeyModifiers modifiers, Keys key, Action action) {
-        int id = _hotKeyActions.Count;
+        _hotkeys.Add((modifiers, key, action));
+    }
 
-        if (!HotKeyWrapper.RegisterHotKey(0, id, modifiers, key)) {
-            throw new Exception($"Failed to register hotkey for key {key} with modifier {modifiers}");
+    private static void AddHotKeys() {
+        for (int i = 0; i < _hotkeys.Count; ++i) {
+            var hotkey = _hotkeys[i];
+            if (!HotKeyWrapper.RegisterHotKey(0, i, hotkey.modifiers, hotkey.key)) {
+                throw new Exception($"Failed to register hotkey for key {hotkey.key} with modifier {hotkey.modifiers}");
+            }
         }
-
-        _hotKeyActions.Add(id, action);
     }
 
     public static void StartProcessingHotKeys() {
@@ -33,10 +37,9 @@ public static class HotKeyManager {
     private static void ProcessHotKeys() {
         CreateMessageQueue();
 
-        Console.WriteLine("Reading hotkeys");
+        AddHotKeys();
 
-        AddHotKey(KeyModifiers.Control | KeyModifiers.Alt, Keys.B,
-            static () => Console.WriteLine("Pressed B"));
+        Console.WriteLine("Reading hotkeys");
 
         while (true) {
             if (!GetMessage(out MSG msg, 0, MessageTypes.HotKey, MessageTypes.HotKey)) {
@@ -50,9 +53,9 @@ public static class HotKeyManager {
                 continue;
             }
 
-            Console.WriteLine("Received hotkey with id: " + hotkeyId);
+            //Console.WriteLine("Received hotkey with id: " + hotkeyId);
 
-            _hotKeyActions[hotkeyId]();
+            _hotkeys[hotkeyId].action();
         }
     }
 
