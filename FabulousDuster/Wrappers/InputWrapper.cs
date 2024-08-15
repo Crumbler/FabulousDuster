@@ -81,7 +81,6 @@ public static partial class InputWrapper {
     [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories)]
     private static partial uint SendInput(uint cNumInputs, in Input rInputs, int cSize);
 
-    [SkipLocalsInit]
     public static unsafe void SendMouseInput(in MouseInput mouseInput) {
         Input inputUnion = mouseInput.ToInput();
 
