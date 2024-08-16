@@ -2,6 +2,8 @@
 using FabulousDuster.Helpers;
 using FabulousDuster.Wrappers;
 
+using Inputs;
+
 using System.Globalization;
 
 namespace FabulousDuster;
@@ -59,12 +61,16 @@ public static class MovementManager {
             await Task.Delay(5000, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
 
-            MouseHelper.MoveToPointAndClick(leftPos);
+            //MouseHelper.MoveToPointAndClick(leftPos);
+            Mouse.SetCursorPos(leftPos.X, leftPos.Y);
+            Mouse.Click(MouseKey.Left, 0);
 
             await Task.Delay(5000, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
 
-            MouseHelper.MoveToPointAndClick(rightPos);
+            //MouseHelper.MoveToPointAndClick(rightPos);
+            Mouse.SetCursorPos(rightPos.X, rightPos.Y);
+            Mouse.Click(MouseKey.Left, 0);
         }
         while (!cancellationToken.IsCancellationRequested);
 

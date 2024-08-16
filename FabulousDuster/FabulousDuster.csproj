@@ -5,11 +5,15 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	<UseWindowsForms>true</UseWindowsForms>
-	<AnalysisMode>all</AnalysisMode>
-	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-	<NoWarn>CA1303;CA2201;CA2007</NoWarn>
-	<Platforms>x64</Platforms>
+	  <UseWindowsForms>true</UseWindowsForms>
+	  <AnalysisMode>all</AnalysisMode>
+	  <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	  <NoWarn>CA1303;CA2201;CA2007</NoWarn>
+	  <Platforms>x64</Platforms>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Avi\Avi.csproj" />
+  </ItemGroup>
 
 </Project>
